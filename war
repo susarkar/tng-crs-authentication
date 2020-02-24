@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+isClean="$(git status --porcelain)";
+isCleanWithoutUntracked="$(git status --untracked-files=no --porcelain)";
+version=$1
+
+_yesOrExit(){
+  while true; do
+    read -p "$1" yn
+    case $yn in
+      [Nn]* ) exit 1;;
+      [!Yy]* ) echo "Please answer [Y]es or [n]o.";;
+      * ) break;;
+    esac
+  done
+}
+
+check_version(){
+  expr "$1" : '^\([0-9]\(\.[0-9]\)*\)$'
+}
+
+# if [ -n "$isCleanWithoutUntracked" ]; then
+  if [ -n "$isClean" ]; then
+    echo "Got uncommit files:"
+    echo "$isClean"
+    _yesOrExit "Do you wish ignore this uncommit files? [Yn]: "
+  fi
+
+  while [ -z `check_version $version` ] && [ -z $version ]; do
+    read -p "Please specify version [1 or 10.0.1 or - ]: " version
+  done
+  if [ ! -z `check_version $version` ];then
+    echo "Version: $version"
+    mvn clean package -Dmaven.test.skip=true  -Drevision=$version
+    git tag $version
+  else
+    echo "Disable tagging"
+    mvn clean package -Dmaven.test.skip=true
+  fi
+
+# else
+  # echo "Dirty state. Please commit before generate war in order to do automated tagging."
+  # echo "$isClean"
+  # exit 1;
+# fi
