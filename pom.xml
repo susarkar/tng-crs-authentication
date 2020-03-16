@@ -293,7 +293,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>tng-crs-authentication-${revision}</finalName>
+		<finalName>tng-crs-authentication</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -1,5 +1,5 @@
-
-FROM tomcat:8
-# Take the war and copy to webapps of tomcat
-COPY target/*.war /usr/local/tomcat/webapps/
-
+FROM java:8-jdk-alpine
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} /usr/crs/apps/tng-crs-authentication.jar
+WORKDIR /usr/crs/apps
+ENTRYPOINT ["java", "-jar" , "tng-crs-authentication.jar"]
