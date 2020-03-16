@@ -1,0 +1,47 @@
+server:
+  port: 8083
+
+eureka:
+  instance:
+    hostname: dev.rbtsb.ml
+#   hostname: localhost
+  client:
+    registerWithEureka: true
+    fetchRegistry: false
+    serviceUrl:
+#     defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+      defaultZone: http://${eureka.instance.hostname}/eureka/eureka
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+spring:
+
+  application:
+    name: CRS_AUTH
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.1.240:3308/crs
+    username: root
+    password: root
+
+  redis:
+    host: 192.168.1.240
+    port: "6333"
+
+
+  jpa:
+   hibernate:
+    ddl-auto: none
+    generate-ddl: true
+    naming:
+      physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+      implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+   properties.hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+   open-in-view: "true"
+
+redis:
+  port: 6333
+  url: 192.168.1.240
+
+ad:
+  domain: sambarbt.com
+  url: 192.168.1.240
