@@ -1,4 +1,4 @@
-package com.rbtsb.tngcrsapi.config;
+package com.rbtsb.config;
 
 import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;

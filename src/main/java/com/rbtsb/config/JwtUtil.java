@@ -1,4 +1,4 @@
-package com.rbtsb.tngcrsapi.config;
+package com.rbtsb.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

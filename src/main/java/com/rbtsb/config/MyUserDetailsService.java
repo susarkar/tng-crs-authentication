@@ -1,4 +1,4 @@
-package com.rbtsb.tngcrsapi.config;
+package com.rbtsb.config;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,7 +1,7 @@
-package com.rbtsb.tngcrsapi.repository.impl;
+package com.rbtsb.repository.impl;
 
-import com.rbtsb.tngcrsapi.model.RedisObject;
-import com.rbtsb.tngcrsapi.repository.RedisRepository;
+import com.rbtsb.model.RedisObject;
+import com.rbtsb.repository.RedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;

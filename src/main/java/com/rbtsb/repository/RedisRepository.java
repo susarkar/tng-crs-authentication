@@ -1,6 +1,6 @@
-package com.rbtsb.tngcrsapi.repository;
+package com.rbtsb.repository;
 
-import com.rbtsb.tngcrsapi.model.RedisObject;
+import com.rbtsb.model.RedisObject;
 
 import java.util.Map;
 

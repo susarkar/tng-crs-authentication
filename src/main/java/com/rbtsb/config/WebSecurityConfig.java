@@ -1,4 +1,4 @@
-package com.rbtsb.tngcrsapi.config;
+package com.rbtsb.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

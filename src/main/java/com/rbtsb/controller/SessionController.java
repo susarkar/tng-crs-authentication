@@ -1,24 +1,20 @@
-package com.rbtsb.tngcrsapi.controller;
+package com.rbtsb.controller;
 
-import com.rbtsb.tngcrsapi.config.AuthenticationRequest;
-import com.rbtsb.tngcrsapi.config.AuthenticationResponse;
-import com.rbtsb.tngcrsapi.config.JwtUtil;
-import com.rbtsb.tngcrsapi.config.MyUserDetailsService;
-import com.rbtsb.tngcrsapi.model.RedisObject;
-import com.rbtsb.tngcrsapi.repository.RedisRepository;
+import com.rbtsb.config.AuthenticationRequest;
+import com.rbtsb.config.AuthenticationResponse;
+import com.rbtsb.config.JwtUtil;
+import com.rbtsb.config.MyUserDetailsService;
+import com.rbtsb.model.RedisObject;
+import com.rbtsb.repository.RedisRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 //@RequestMapping("/api")

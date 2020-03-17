@@ -1,4 +1,4 @@
-package com.rbtsb.tngcrsapi.model;
+package com.rbtsb.model;
 
 public class RedisObject {
     private String id;
