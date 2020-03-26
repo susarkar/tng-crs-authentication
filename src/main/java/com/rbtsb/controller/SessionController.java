@@ -96,6 +96,11 @@ public class SessionController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
+    @GetMapping("check")
+    public String checkDocker() {
+        return accountProxy.checkDocker();
+    }
+
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
     public ResponseEntity<?> validateToken(@RequestBody String token) throws Exception {
