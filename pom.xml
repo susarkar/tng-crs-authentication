@@ -117,11 +117,6 @@
 			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.rbtsb.crs</groupId>
-			<artifactId>tng-crs-masterdata</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.9.2</version>
