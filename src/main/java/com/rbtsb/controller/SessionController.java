@@ -4,6 +4,7 @@ import com.rbtsb.config.AuthenticationRequest;
 import com.rbtsb.config.AuthenticationResponse;
 import com.rbtsb.config.JwtUtil;
 import com.rbtsb.config.MyUserDetailsService;
+import com.rbtsb.entities.Account;
 import com.rbtsb.model.RedisObject;
 import com.rbtsb.repository.RedisRepository;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +16,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @RestController
 //@RequestMapping("/api")
@@ -36,6 +40,15 @@ public class SessionController {
     @Autowired
     private RedisRepository redisRepository;
 
+    @Autowired
+    private AccountProxy accountProxy;
+
+//    @RequestMapping(value = "/current", method = RequestMethod.GET)
+//    public ResponseEntity<?> accounts(Principal principal, HttpServletRequest request) throws Exception {
+//        log.debug("REST request to get current Account : {}", principal.getName());
+//        Account account = accountProxy.getAccountByUserName(principal.getName());
+//        return new ResponseEntity<>(account, HttpStatus.OK);
+//    }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
@@ -112,7 +125,9 @@ public class SessionController {
              */
             if (username.equals(userDetails.getUsername()) && !jwtTokenUtil.isTokenExpired(token)) {
                 log.info("Token is valid-- " + token);
-                return ResponseEntity.ok(true);
+                ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
+                return new ResponseEntity<>(account, HttpStatus.OK);
+//                return ResponseEntity.ok(true);
             } else {
                 //find redis token based on the username
                 if (redisToken.equals(token)) {
