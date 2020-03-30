@@ -4,9 +4,9 @@ import com.rbtsb.config.AuthenticationRequest;
 import com.rbtsb.config.AuthenticationResponse;
 import com.rbtsb.config.JwtUtil;
 import com.rbtsb.config.MyUserDetailsService;
-import com.rbtsb.entities.Account;
+import com.rbtsb.entities.*;
 import com.rbtsb.model.RedisObject;
-import com.rbtsb.repository.RedisRepository;
+import com.rbtsb.repository.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -15,10 +15,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @RestController
 //@RequestMapping("/api")
@@ -41,7 +46,16 @@ public class SessionController {
     private RedisRepository redisRepository;
 
     @Autowired
-    private AccountProxy accountProxy;
+    private AccountRepository accountRepository;
+    @Autowired
+    private ActionRepository actionRepository;
+    @Autowired
+    private ModuleRepository moduleRepository;
+    @Autowired
+    private PermissionRepository permissionRepository;
+
+//    @Autowired
+//    private AccountProxy accountProxy;
 
 //    @RequestMapping(value = "/current", method = RequestMethod.GET)
 //    public ResponseEntity<?> accounts(Principal principal, HttpServletRequest request) throws Exception {
@@ -96,10 +110,10 @@ public class SessionController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
-    @GetMapping("check")
-    public String checkDocker() {
-        return accountProxy.checkDocker();
-    }
+//    @GetMapping("check")
+//    public String checkDocker() {
+//        return accountProxy.checkFeign();
+//    }
 
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
@@ -130,8 +144,23 @@ public class SessionController {
              */
             if (username.equals(userDetails.getUsername()) && !jwtTokenUtil.isTokenExpired(token)) {
                 log.info("Token is valid-- " + token);
-                ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
-                return new ResponseEntity<>(account, HttpStatus.OK);
+//                ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
+//                Account account = accountRepository.findByUsername(username);
+//                return new ResponseEntity<>(account, HttpStatus.OK);
+
+                RestTemplate restTemplate = new RestTemplate();
+                String uri = "http://192.168.1.240:9001/master-data/user-management/accounts/find-by-username/" + username;
+//                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
+//                String uri = "http://tng-crs-masterdata/master-data/user-management/accounts/find-by-username/" + username;
+                Account result = restTemplate.getForObject(uri, Account.class);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+                /*return accountRepository.findByUsernameReturnOptional(username)
+                        .map(account -> {
+                            account.setAuthorities(getAuthorities(account));
+                            return new ResponseEntity<>(account, HttpStatus.OK);
+                        })
+                        .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+                    */
 //                return ResponseEntity.ok(true);
             } else {
                 //find redis token based on the username
@@ -153,32 +182,30 @@ public class SessionController {
         }
     }
 
+    public List<String> getAuthorities(Account account) {
+        List<String> authorities = new ArrayList<>();
 
-   /* @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
-    public ResponseEntity<?> validateToken(@RequestBody String token) throws Exception {
+        Role role = account.getRole();
+        if (role != null) {
+            authorities.add(role.getName());
 
-        try {
-            log.debug("validating the Token--", token);
-            String username = jwtTokenUtil.extractUsername(token);
-            log.debug("Extracting the username from token--", username);
-            final UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(username);
+            List<Module> modules = moduleRepository.findByRoleId(role.getId());
+            for (Module module : modules)
+                authorities.add(module.getName());
 
-            if (userDetails != null && jwtTokenUtil.validateToken(username, userDetails)) {
-                log.debug("Token is valid-- " + token);
-            } else {
-                log.debug("Token is not valid-- " + token);
-//                return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
-//                        HttpStatus.UNAUTHORIZED);
-                return new ResponseEntity<String>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
-            }
-            return ResponseEntity.ok(new AuthenticationResponse(token));
+            List<Permission> permissions = permissionRepository.findByRoleId(role.getId());
+            for (Permission permission : permissions)
+                authorities.add(permission.getName());
 
-        } catch (Exception ex) {
-//            return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
-//                    HttpStatus.UNAUTHORIZED);
-            return new ResponseEntity<String>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
+            List<Action> actions = actionRepository.findByRoleId(role.getId());
+            for (Action action : actions)
+                authorities.add(action.getName());
 
+            return authorities;
         }
-    }*/
+
+        return null;
+    }
+
+
 }
