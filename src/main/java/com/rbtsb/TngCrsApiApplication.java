@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 //@EnableDiscoveryClient
 //@EnableEurekaClient
 @EnableDiscoveryClient
-//@EnableFeignClients("com.rbtsb")
+@EnableFeignClients("com.rbtsb")
 @EnableJpaRepositories(basePackages = {"com.rbtsb.repository"},repositoryBaseClass = MasterEntityRepositoryImpl.class)
 @ComponentScan("com.rbtsb")
 public class TngCrsApiApplication extends SpringBootServletInitializer implements CommandLineRunner {

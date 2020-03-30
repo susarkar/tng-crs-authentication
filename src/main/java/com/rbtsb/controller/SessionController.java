@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -54,8 +52,8 @@ public class SessionController {
     @Autowired
     private PermissionRepository permissionRepository;
 
-//    @Autowired
-//    private AccountProxy accountProxy;
+    @Autowired
+    private AccountProxy accountProxy;
 
 //    @RequestMapping(value = "/current", method = RequestMethod.GET)
 //    public ResponseEntity<?> accounts(Principal principal, HttpServletRequest request) throws Exception {
@@ -144,16 +142,16 @@ public class SessionController {
              */
             if (username.equals(userDetails.getUsername()) && !jwtTokenUtil.isTokenExpired(token)) {
                 log.info("Token is valid-- " + token);
-//                ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
-//                Account account = accountRepository.findByUsername(username);
-//                return new ResponseEntity<>(account, HttpStatus.OK);
-
+                ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
+                return new ResponseEntity<>(account.getBody(), HttpStatus.OK);
+/*
                 RestTemplate restTemplate = new RestTemplate();
-                String uri = "http://192.168.1.240:9001/master-data/user-management/accounts/find-by-username/" + username;
-//                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
 //                String uri = "http://tng-crs-masterdata/master-data/user-management/accounts/find-by-username/" + username;
+//                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
+                String uri = "http://localhost:9001/master-data/user-management/accounts/find-by-username/" + username;
                 Account result = restTemplate.getForObject(uri, Account.class);
                 return new ResponseEntity<>(result, HttpStatus.OK);
+                */
                 /*return accountRepository.findByUsernameReturnOptional(username)
                         .map(account -> {
                             account.setAuthorities(getAuthorities(account));
