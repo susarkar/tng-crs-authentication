@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,18 +141,20 @@ public class SessionController {
             /**
              * If username match and token not expired then token is valid.
              */
+
             if (username.equals(userDetails.getUsername()) && !jwtTokenUtil.isTokenExpired(token)) {
                 log.info("Token is valid-- " + token);
+                /*
                 ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
-                return new ResponseEntity<>(account.getBody(), HttpStatus.OK);
-/*
+                return new ResponseEntity<>(account.getBody(), HttpStatus.OK);*/
+
                 RestTemplate restTemplate = new RestTemplate();
 //                String uri = "http://tng-crs-masterdata/master-data/user-management/accounts/find-by-username/" + username;
-//                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
-                String uri = "http://localhost:9001/master-data/user-management/accounts/find-by-username/" + username;
+                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
+//                String uri = "http://localhost:9001/master-data/user-management/accounts/find-by-username/" + username;
                 Account result = restTemplate.getForObject(uri, Account.class);
                 return new ResponseEntity<>(result, HttpStatus.OK);
-                */
+
                 /*return accountRepository.findByUsernameReturnOptional(username)
                         .map(account -> {
                             account.setAuthorities(getAuthorities(account));
