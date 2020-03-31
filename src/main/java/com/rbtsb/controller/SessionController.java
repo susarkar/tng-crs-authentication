@@ -157,8 +157,8 @@ public class SessionController {
 
                 RestTemplate restTemplate = new RestTemplate();
 //                String uri = "http://tng-crs-masterdata/master-data/user-management/accounts/find-by-username/" + username;
-                String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
-//                String uri = "http://localhost:9001/master-data/user-management/accounts/find-by-username/" + username;
+                //String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
+                String uri = "http://192.168.1.240:9001/master-data/user-management/accounts/find-by-username/" + username;
                 Account result = restTemplate.getForObject(uri, Account.class);
                 return new ResponseEntity<>(result, HttpStatus.OK);
 
