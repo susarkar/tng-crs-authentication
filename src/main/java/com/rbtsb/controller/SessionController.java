@@ -106,8 +106,8 @@ public class SessionController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
-    @GetMapping("token-test")
-    public ResponseEntity<?> tokenTest(@RequestBody String token) {
+    @RequestMapping(value = "/test-token", method = RequestMethod.POST)
+    public ResponseEntity<?> tokenTest(@RequestBody String token) throws Exception {
         ResponseEntity<?> account = null;
         try {
             log.info("validating the Token--" + token);
