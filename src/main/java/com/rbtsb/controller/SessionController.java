@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -109,10 +106,20 @@ public class SessionController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
-//    @GetMapping("check")
-//    public String checkDocker() {
-//        return accountProxy.checkFeign();
-//    }
+    @GetMapping("token-test")
+    public ResponseEntity<?> tokenTest(@RequestBody String token) {
+        ResponseEntity<?> account = null;
+        try {
+            log.info("validating the Token--" + token);
+            String username = jwtTokenUtil.extractUsername(token);
+            log.info("Extracting the username from token--" + username);
+            account = accountProxy.getAccountByUserName(username);
+            return new ResponseEntity<>(account.getBody(), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error inside the tokenTest--" + e);
+        }
+        return null;
+    }
 
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
