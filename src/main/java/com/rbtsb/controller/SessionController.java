@@ -155,20 +155,21 @@ public class SessionController {
                 ResponseEntity<?> account = accountProxy.getAccountByUserName(username);
                 return new ResponseEntity<>(account.getBody(), HttpStatus.OK);*/
 
+  /*
                 RestTemplate restTemplate = new RestTemplate();
 //                String uri = "http://tng-crs-masterdata/master-data/user-management/accounts/find-by-username/" + username;
                 //String uri = "http://dev.rbtsb.ml/master-data/user-management/accounts/find-by-username/" + username;
                 String uri = "http://192.168.1.240:9001/master-data/user-management/accounts/find-by-username/" + username;
                 Account result = restTemplate.getForObject(uri, Account.class);
                 return new ResponseEntity<>(result, HttpStatus.OK);
+                */
 
-                /*return accountRepository.findByUsernameReturnOptional(username)
+                return accountRepository.findByUsernameReturnOptional(username)
                         .map(account -> {
                             account.setAuthorities(getAuthorities(account));
                             return new ResponseEntity<>(account, HttpStatus.OK);
                         })
                         .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-                    */
 //                return ResponseEntity.ok(true);
             } else {
                 //find redis token based on the username
