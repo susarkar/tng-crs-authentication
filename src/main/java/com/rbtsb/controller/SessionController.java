@@ -5,6 +5,7 @@ import com.rbtsb.config.AuthenticationResponse;
 import com.rbtsb.config.JwtUtil;
 import com.rbtsb.config.MyUserDetailsService;
 import com.rbtsb.entities.*;
+import com.rbtsb.entities.Module;
 import com.rbtsb.model.RedisObject;
 import com.rbtsb.repository.*;
 import lombok.extern.log4j.Log4j2;

@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = false, exclude = {"role", "permissions"})
-@Table(name = "MODULE")
+@Table(name = "MODULES")
 @ToString(exclude = "role")
 public class Module extends MasterEntity implements Serializable {
 	
