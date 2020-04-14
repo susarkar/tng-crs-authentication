@@ -1,5 +1,6 @@
 package com.rbtsb.config;
 
+import com.rbtsb.filter.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,18 +13,45 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService myUserDetailsService;
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetailsService);
+//        auth.userDetailsService(myUserDetailsService);
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups")
+                .contextSource()
+                .url("ldap://localhost:8389/dc=springframework,dc=org")
+                .and()
+                .passwordCompare()
+//                .passwordEncoder(new BCryptPasswordEncoder())
+                .passwordEncoder(passwordEncoder())
+                .passwordAttribute("userPassword");
     }
+
+
+    /* LDAP-TESTING LOGIN PAGE
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .anyRequest().fullyAuthenticated()
+                .and()
+                .formLogin();
+    }*/
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,23 +97,6 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-//    @Override
-//    protected void configure(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/api/authenticate").permitAll()
-//                .antMatchers("/complaint/*").permitAll()
-//                .antMatchers("/recipient/*").permitAll()
-//                .antMatchers("/whistle-blower/*").permitAll()
-//                .antMatchers("/attachement/*").permitAll()
-//                .antMatchers("/enum/*").permitAll()
-//                .antMatchers("**/favicon.ico").permitAll()
-//                .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
-//                .anyRequest().authenticated().and().
-//                exceptionHandling().and().sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//    }
 
     /**
      * Any path with api must authenticate, remaining paths allowed to access with out token
@@ -104,55 +115,11 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-//                .antMatchers("/",
-//                        "/v2/api-docs",
-//                        "/swagger-resources/**",
-//                        "/csrf/**",
-//                        "/webjars/**",
-//                        "/favicon.ico",
-//                        "/**/*.png",
-//                        "/**/*.gif",
-//                        "/**/*.svg",
-//                        "/**/*.jpg",
-//                        "/**/*.html",
-//                        "/**/*.css",
-//                        "/**/*.js")
-//                .permitAll()
-//                .antMatchers("/authenticate").permitAll()
-//                .antMatchers("/complaint/*").permitAll()
-//                .antMatchers("/recipient/*").permitAll()
-//                .antMatchers("/whistle-blower/*").permitAll()
-//                .antMatchers("/attachement/*").permitAll()
-//                .antMatchers("/enum/*").permitAll()
-//                .antMatchers("**/favicon.ico").permitAll()
-//                .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
-                .antMatchers("/api/**").authenticated()
+//                .antMatchers("/master-data/**").authenticated()
                 .anyRequest()
                 .permitAll();
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests().anyRequest().authenticated().and().httpBasic();
-//    }
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-//        authManagerBuilder.authenticationProvider(activeDirectoryLdapAuthenticationProvider()).userDetailsService(userDetailsService());
-//    }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager() {
-//        return new ProviderManager(Arrays.asList(activeDirectoryLdapAuthenticationProvider()));
-//    }
-//    @Bean
-//    public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-//        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(AD_DOMAIN, AD_URL);
-//        provider.setConvertSubErrorCodesToExceptions(true);
-//        provider.setUseAuthenticationRequestCredentials(true);
-//
-//        return provider;
-//    }
 
 }

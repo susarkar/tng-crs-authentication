@@ -1,87 +1,33 @@
 package com.rbtsb.entities;
 
-
-import com.rbtsb.enums.EnumAccountStatus;
-import com.rbtsb.utils.Global;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
+import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = false, exclude = { "role" })
-@Entity
-@Table(name = "accounts")
-@ToString(exclude = { "role"})
-public class Account extends MasterEntity implements Serializable {
-	private static final long serialVersionUID = -77806658444851291L;
+public class Account {
 
-	@Column(name = "USERNAME", nullable = false, length = Global.VARCHAR32)
-	private String username;
+    private String username;
 
-//    @JsonIgnore
-//	@Column(name = "PASSWORD", nullable = false, length = Global.VARCHAR255)
-//	private String password;
+    private String email;
 
-	@Column(name = "EMAIL", nullable = false, length = Global.VARCHAR64)
-	private String email;
+    private String fullName;
 
-	@Column(name = "FULLNAME", nullable = false, length = Global.VARCHAR255)
-	private String fullName;
+    private Integer loginAttempts;
 
-	@Column(name = "LOGIN_ATTEMPTS")
-	private Integer loginAttempts = 0;
+    private Boolean forceChangePassword;
 
-	@Column(name = "FORCE_CHANGE_PASSWORD")
-	private Boolean forceChangePassword = true;
+    private String resetToken;
 
-	@Size(max = 20)
-	@Column(name = "RESET_TOKEN", length = 20)
-	private String resetToken;
+    private Date requestResetDate;
 
-	@Column(name = "REQUEST_RESET_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date requestResetDate;
+    private Date resetDate;
 
-	@Column(name = "RESET_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date resetDate;
+    @Transient
+    private List<String> authorities;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn
-	@NotNull
-	private Role role;
-
-	@Enumerated(value = EnumType.STRING)
-	@Column(name = "STATUS", nullable = false)
-	private EnumAccountStatus status = EnumAccountStatus.ACTIVE;
-
-	@Transient
-	private List<String> authorities;
-
-	public int getLoginAttempts() {
-		return loginAttempts != null ? loginAttempts : 0;
-	}
-
-	public EnumAccountStatus getStatus() {
-		return status != null ? status : EnumAccountStatus.ACTIVE;
-	}
-
-	public Account() {
-	}
-
-	public Account(String username, String email, String fullname, Role role) {
-		this.username = username;
-		//this.password = password;
-		this.email = email;
-		this.fullName = fullname;
-		this.role = role;
-	}
-
+//    @Transient
+//    private List<GrantedAuthority> authorities;
 }

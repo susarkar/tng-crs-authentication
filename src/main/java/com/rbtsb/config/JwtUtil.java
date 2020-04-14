@@ -45,9 +45,12 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-
+        /**
+         *         System.out.println(new Date(System.currentTimeMillis() + 1000 * 60 * 15 * 1));//expires in 15min
+         *         System.out.println(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10));//expires in 10hours
+         */
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))//expires in 1 hour.
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
