@@ -25,6 +25,39 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+//    @Value("${ldap.urls}")
+//    private String ldapUrls;
+//
+//    @Value("${ldap.base.dn}")
+//    private String ldapBaseDn;
+
+//
+//    @Value("${ldap.username}")
+//    private String ldapSecurityPrincipal;
+//
+//    @Value("${ldap.password}")
+//    private String ldapPrincipalPassword;
+//
+//    @Value("${ldap.user.dn.pattern}")
+//    private String ldapUserDnPattern;
+/*
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(myUserDetailsService);
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups")
+                .contextSource()
+                .url(ldapUrls + ldapBaseDn)
+                .and()
+                .passwordCompare()
+//                .passwordEncoder(new BCryptPasswordEncoder())
+                .passwordEncoder(passwordEncoder())
+                .passwordAttribute("userPassword");
+    }
+*/
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(myUserDetailsService);
@@ -57,12 +90,6 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-
-    @Value("${ad.domain}")
-    private String AD_DOMAIN;
-
-    @Value("${ad.url}")
-    private String AD_URL;
 
     @Value("${redis.port}")
     private String REDIS_PORT;

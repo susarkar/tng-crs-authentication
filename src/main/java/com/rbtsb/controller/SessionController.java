@@ -1,10 +1,13 @@
 package com.rbtsb.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbtsb.config.AuthenticationRequest;
 import com.rbtsb.config.AuthenticationResponse;
 import com.rbtsb.config.JwtUtil;
 import com.rbtsb.config.MyUserDetailsService;
 import com.rbtsb.model.RedisObject;
+import com.rbtsb.pojos.AuditLogPojo;
 import com.rbtsb.repository.RedisRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @RestController
 //@RequestMapping("/api")
@@ -42,6 +49,32 @@ public class SessionController {
     @Autowired
     private FeignProxy feignProxy;
 
+    @Autowired
+    private FeignLogProxy feignLogProxy;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+
+    /* method to save audit log details
+     */
+    public void saveAuditLogDetails(String action, String api, String username, JsonNode data) {
+
+        AuditLogPojo auditLog = new AuditLogPojo();
+        auditLog.setAction(action);
+        auditLog.setData(data);
+        auditLog.setApi(api);
+
+        auditLog.setUsername(username);
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Instant instant = timestamp.toInstant();
+        auditLog.setTimestamp(instant.toString());
+
+        feignLogProxy.addAuditLog(auditLog);
+
+    }
+
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
@@ -50,6 +83,15 @@ public class SessionController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
+            /*
+             *  save AuditLog details for authentication
+             */
+            try {
+                JsonNode auditLog = mapper.convertValue(authenticationRequest, JsonNode.class);
+                saveAuditLogDetails("User Login", "/authenticate", authenticationRequest.getUsername(), auditLog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception ex) {
             log.error("Error in createAuthenticationToken--{} ", ex.getMessage());
 //            return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
@@ -89,6 +131,31 @@ public class SessionController {
         log.info("findById--" + redisObject2);
 */
         return ResponseEntity.ok(new AuthenticationResponse(jwt, userDetails.getUsername()));
+    }
+/*
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public void logout(HttpServletRequest request) throws Exception {
+        log.debug("RESt request to logout");
+        request.logout();
+    }*/
+
+    @RequestMapping(value = "/logout-crs", method = RequestMethod.POST)
+    public ResponseEntity<?> logout(@RequestBody String token) throws Exception {
+        try {
+            log.info("REST request to logout");
+            String username = jwtTokenUtil.extractUsername(token);
+            log.info("Extracting the username from token--" + username);
+            redisRepository.delete(username);
+            try {
+                JsonNode auditLog = mapper.convertValue(token, JsonNode.class);
+                saveAuditLogDetails("User Login", "/authenticate", username, auditLog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<String>("Invalid username/token.", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<String>("User Logout Successful.", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)

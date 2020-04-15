@@ -1,6 +1,6 @@
 spring:
   application:
     name: tng-crs-authentication
-#  cloud:
-#    config:
-#      uri: http://192.168.1.240:8088
+  cloud:
+    config:
+      uri: http://192.168.1.240:8088
