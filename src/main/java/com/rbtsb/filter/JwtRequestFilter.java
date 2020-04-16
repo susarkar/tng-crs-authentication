@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.security.sasl.AuthenticationException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (ExpiredJwtException e) {
-                throw new SessionExpiredException("Session not active");
+//                throw new SessionExpiredException("Session not active");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Invalid Token.");
             }
         }
 
@@ -56,7 +59,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
-                throw new SessionExpiredException("Session not active");
+//                throw new SessionExpiredException("Session not active");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Invalid Token.");
             }
         }
 //        else {
