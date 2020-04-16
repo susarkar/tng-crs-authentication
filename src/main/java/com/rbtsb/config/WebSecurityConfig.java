@@ -25,39 +25,41 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-//    @Value("${ldap.urls}")
-//    private String ldapUrls;
+    @Value("${spring.ldap.urls}")
+    private String ldapUrls;
 //
 //    @Value("${ldap.base.dn}")
 //    private String ldapBaseDn;
 
-//
-//    @Value("${ldap.username}")
+    //    @Value("${ldap.username}")
 //    private String ldapSecurityPrincipal;
 //
 //    @Value("${ldap.password}")
 //    private String ldapPrincipalPassword;
 //
-//    @Value("${ldap.user.dn.pattern}")
-//    private String ldapUserDnPattern;
-/*
+    @Value("${spring.ldap.user.dn.pattern}")
+    private String ldapUserDnPattern;
+
+    @Value("${spring.ldap.group-search-base}")
+    private String ldapGroupSearchBase;
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(myUserDetailsService);
         auth
                 .ldapAuthentication()
-                .userDnPatterns("uid={0},ou=people")
-                .groupSearchBase("ou=groups")
+                .userDnPatterns(ldapUserDnPattern)
+                .groupSearchBase(ldapGroupSearchBase)
                 .contextSource()
-                .url(ldapUrls + ldapBaseDn)
+                .url(ldapUrls)
                 .and()
                 .passwordCompare()
 //                .passwordEncoder(new BCryptPasswordEncoder())
                 .passwordEncoder(passwordEncoder())
                 .passwordAttribute("userPassword");
     }
-*/
 
+/*
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(myUserDetailsService);
@@ -73,7 +75,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder())
                 .passwordAttribute("userPassword");
     }
-
+*/
 
     /* LDAP-TESTING LOGIN PAGE
     @Override
