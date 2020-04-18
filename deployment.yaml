@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: tng-crs-authentication
+  name: tng-crs-authentication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: tng-crs-authentication
+      app: tng-crs-authentication
+      tier: backend
+      track: stable
+     
+  template:
+    metadata:
+      labels:
+        run: tng-crs-authentication
+        app: tng-crs-authentication
+        tier: backend
+        track: stable
+    spec:
+      containers:
+      - image: registry-intl-vpc.ap-southeast-3.aliyuncs.com/tng/sit:tng-crs-authentication-0.1
+        imagePullPolicy: Always
+        name: tng-crs-authentication
+        ports:
+        - containerPort: 9005
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "sit"  
+      imagePullSecrets:
+      - name: susantadockercreds 
