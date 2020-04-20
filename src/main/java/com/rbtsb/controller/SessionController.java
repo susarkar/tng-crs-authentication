@@ -155,7 +155,7 @@ public class SessionController {
         } catch (Exception e) {
             return new ResponseEntity<String>("Invalid username/token.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>("User Logout Successful.", HttpStatus.OK);
+        return new ResponseEntity<Object>("User Logout Successful.", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
