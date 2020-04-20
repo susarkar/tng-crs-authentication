@@ -112,7 +112,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         jedisConFactory.setHostName(REDIS_URL);
         jedisConFactory.setPort(Integer.valueOf(REDIS_PORT));
         jedisConFactory.setPassword(REDIS_PASSWORD);
-        jedisConFactory.setDatabase(0);
+        jedisConFactory.setDatabase(dbIndex);
         return jedisConFactory;
     }
 
