@@ -99,12 +99,20 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${redis.url}")
     private String REDIS_URL;
 
+    @Value("${redis.password}")
+    private String REDIS_PASSWORD;
+
+    @Value("${redis.database}")
+    private int dbIndex;
+
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConFactory
                 = new JedisConnectionFactory();
         jedisConFactory.setHostName(REDIS_URL);
         jedisConFactory.setPort(Integer.valueOf(REDIS_PORT));
+        jedisConFactory.setPassword(REDIS_PASSWORD);
+        jedisConFactory.setDatabase(0);
         return jedisConFactory;
     }
 
