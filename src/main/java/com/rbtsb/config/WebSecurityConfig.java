@@ -109,6 +109,10 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConFactory
                 = new JedisConnectionFactory();
+        System.out.println("REDIS_URL--"+REDIS_URL);
+        System.out.println("REDIS_PORT--"+REDIS_PORT);
+        System.out.println("REDIS_PASSWORD--"+REDIS_PASSWORD);
+        System.out.println("dbIndex--"+dbIndex);
         jedisConFactory.setHostName(REDIS_URL);
         jedisConFactory.setPort(Integer.valueOf(REDIS_PORT));
         jedisConFactory.setPassword(REDIS_PASSWORD);
