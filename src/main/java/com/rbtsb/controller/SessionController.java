@@ -6,6 +6,8 @@ import com.rbtsb.config.AuthenticationRequest;
 import com.rbtsb.config.AuthenticationResponse;
 import com.rbtsb.config.JwtUtil;
 import com.rbtsb.config.MyUserDetailsService;
+import com.rbtsb.entities.Account;
+import com.rbtsb.enums.EnumAccountStatus;
 import com.rbtsb.model.RedisObject;
 import com.rbtsb.pojos.AuditLogPojo;
 import com.rbtsb.repository.RedisRepository;
@@ -83,6 +85,14 @@ public class SessionController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
+
+            Account account = feignProxy.getAccountByUserName(authenticationRequest.getUsername());
+            if (account.getStatus() != null) {
+                if (!account.getStatus().equals(EnumAccountStatus.ACTIVE)) {
+                    log.debug("User is not Active..." + authenticationRequest.getUsername());
+                    return new ResponseEntity<String>("User account is not Active, please contact Admin.", HttpStatus.UNAUTHORIZED);
+                }
+            }
             /*
              *  save AuditLog details for authentication
              */
