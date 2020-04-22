@@ -11,6 +11,7 @@ import com.rbtsb.enums.EnumAccountStatus;
 import com.rbtsb.model.RedisObject;
 import com.rbtsb.pojos.AuditLogPojo;
 import com.rbtsb.repository.RedisRepository;
+import com.rbtsb.utils.DateUtil;
 import com.rbtsb.utils.ResponseUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 
 @RestController
 //@RequestMapping("/api")
@@ -57,19 +59,14 @@ public class SessionController {
 
     /* method to save audit log details
      */
-    public void saveAuditLogDetails(String action, String api, String username, JsonNode data) {
+    public void saveAuditLogDetails(String action, String api, String username, String data) {
 
         AuditLogPojo auditLog = new AuditLogPojo();
         auditLog.setAction(action);
         auditLog.setData(data);
         auditLog.setApi(api);
-
         auditLog.setUsername(username);
-
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Instant instant = timestamp.toInstant();
-        auditLog.setTimestamp(instant.toString());
-
+        auditLog.setTimestamp(DateUtil.formatISO8601(new Date()));
         feignLogProxy.addAuditLog(auditLog);
 
     }
@@ -94,10 +91,11 @@ public class SessionController {
              *  save AuditLog details for authentication
              */
             try {
-                JsonNode auditLog = mapper.convertValue(authenticationRequest, JsonNode.class);
+                //JsonNode auditLog = mapper.convertValue(authenticationRequest, JsonNode.class);
+                String auditLog = mapper.writeValueAsString(authenticationRequest);
                 saveAuditLogDetails("User Login", "/authenticate", authenticationRequest.getUsername(), auditLog);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
             }
         } catch (Exception ex) {
             log.error("Error in createAuthenticationToken--{} ", ex.getMessage());
@@ -154,8 +152,8 @@ public class SessionController {
             log.info("Extracting the username from token--" + username);
             redisRepository.delete(username);
             try {
-                JsonNode auditLog = mapper.convertValue(token, JsonNode.class);
-                saveAuditLogDetails("User Login", "/authenticate", username, auditLog);
+                //JsonNode auditLog = mapper.convertValue(token, JsonNode.class);
+                saveAuditLogDetails("User Login", "/authenticate", username, token);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -31,6 +31,6 @@ public class AuditLogPojo implements Serializable {
 
     @FieldAttributes(nullable = false)
     @JsonProperty(value = "data")
-    private JsonNode data;
+    private String data;
 
 }
