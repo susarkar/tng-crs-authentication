@@ -11,6 +11,7 @@ import com.rbtsb.enums.EnumAccountStatus;
 import com.rbtsb.model.RedisObject;
 import com.rbtsb.pojos.AuditLogPojo;
 import com.rbtsb.repository.RedisRepository;
+import com.rbtsb.utils.ResponseUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -41,9 +41,6 @@ public class SessionController {
 
     @Autowired
     private MyUserDetailsService userDetailsService;
-
-    @Autowired
-    private MessageSource messageSource;
 
     @Autowired
     private RedisRepository redisRepository;
@@ -90,7 +87,7 @@ public class SessionController {
             if (account.getStatus() != null) {
                 if (!account.getStatus().equals(EnumAccountStatus.ACTIVE)) {
                     log.debug("User is not Active..." + authenticationRequest.getUsername());
-                    return new ResponseEntity<String>("User account is not Active, please contact Admin.", HttpStatus.UNAUTHORIZED);
+                    return ResponseUtils.sendError("User account is not Active, please contact Admin.", HttpStatus.UNAUTHORIZED);
                 }
             }
             /*
@@ -106,7 +103,7 @@ public class SessionController {
             log.error("Error in createAuthenticationToken--{} ", ex.getMessage());
 //            return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
 //                    HttpStatus.UNAUTHORIZED);
-            return new ResponseEntity<String>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
+            return ResponseUtils.sendError("Invalid username or password.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         final UserDetails userDetails = userDetailsService
@@ -163,9 +160,9 @@ public class SessionController {
                 e.printStackTrace();
             }
         } catch (Exception e) {
-            return new ResponseEntity<String>("Invalid username/token.", HttpStatus.BAD_REQUEST);
+            return ResponseUtils.sendError("Invalid username/token.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<Object>("User Logout Successful.", HttpStatus.OK);
+        return ResponseUtils.sendSuccess("User Logout Successful.");
     }
 
     @RequestMapping(value = "/validate-token", method = RequestMethod.POST)
@@ -181,7 +178,7 @@ public class SessionController {
             String redisToken = redisRepository.findById(username);
             if (!redisToken.equals(token)) {
                 log.info("Token not match with Redis Token--" + token);
-                return new ResponseEntity<String>("Invalid Token.", HttpStatus.UNAUTHORIZED);
+                return ResponseUtils.sendError("Invalid Token.", HttpStatus.UNAUTHORIZED);
             } else {
                 log.info("Token match with Redis Token--" + token);
             }
@@ -227,14 +224,14 @@ public class SessionController {
                 log.info("Token is not valid-- " + token);
 //                return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
 //                        HttpStatus.UNAUTHORIZED);
-                return new ResponseEntity<String>("Invalid Token.", HttpStatus.UNAUTHORIZED);
+                return ResponseUtils.sendError("Invalid Token.", HttpStatus.UNAUTHORIZED);
             }
 
         } catch (Exception ex) {
             log.error("Error in validate-token--{} ", ex.getMessage());
 //            return new ResponseEntity<>(messageSource.getMessage("login.bad.credentials", null, null),
 //                    HttpStatus.UNAUTHORIZED);
-            return new ResponseEntity<String>("Invalid Token.", HttpStatus.UNAUTHORIZED);
+            return ResponseUtils.sendError("Invalid Token.", HttpStatus.UNAUTHORIZED);
 
         }
     }
