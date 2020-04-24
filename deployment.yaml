@@ -22,7 +22,7 @@ spec:
         track: stable
     spec:
       containers:
-      - image: registry-intl-vpc.ap-southeast-3.aliyuncs.com/tng/sit:tng-crs-authentication-0.1
+      - image: registry-intl-vpc.ap-southeast-3.aliyuncs.com/tng/sit:tng-crs-authentication-0.13
         imagePullPolicy: Always
         name: tng-crs-authentication
         ports:
